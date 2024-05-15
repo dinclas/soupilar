@@ -59,3 +59,11 @@ def test_invalid_missing_words():
     response = client.post("/sort", json={"order": "asc"})
 
     assert response.status_code == 422
+
+
+def test_invalid_ascii_range():
+    response = client.post(
+        "/sort", json={"words": ["batman", "\u0fff"], "order": "desc"}
+    )
+
+    assert response.status_code == 422

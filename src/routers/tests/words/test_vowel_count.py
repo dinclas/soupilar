@@ -32,3 +32,9 @@ def test_null_string():
     response = client.post("/vowel_count", json={"words": ["batman", None]})
 
     assert response.status_code == 422
+
+
+def test_invalid_ascii_range():
+    response = client.post("/vowel_count", json={"words": ["batman", "\u0fff"]})
+
+    assert response.status_code == 422

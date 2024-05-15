@@ -4,6 +4,7 @@ from typing import Literal
 
 from ..internal.vowels_counter import VowelsCounter
 from ..internal.words_sorter import WordsSorter
+from ..types.ascii_word import AsciiWord
 
 router = APIRouter()
 
@@ -17,7 +18,7 @@ def validate_content_type(request: Request):
 
 
 class WordsPayload(BaseModel):
-    words: conlist(str, min_length=1)
+    words: conlist(AsciiWord, min_length=1)
 
 
 class SortPayload(WordsPayload):
