@@ -1,7 +1,14 @@
 service: soupilar
 image: dinclas/soupilar
+ssh:
+  port: 49741
 servers:
   - 116.202.49.57
+healthcheck:
+  path: /healthcheck
+  port: 8080
+  max_attempts: 12
+  interval: 30s
 # Docker image registry credentials
 registry:
   # Specify the registry server, if you're not using Docker Hub
