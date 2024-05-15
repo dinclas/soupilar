@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
-from pydantic import BaseModel
-from typing import List, Literal
+from pydantic import BaseModel, conlist
+from typing import Literal
 
 from ..internal.vowels_counter import VowelsCounter
 from ..internal.words_sorter import WordsSorter
@@ -17,7 +17,7 @@ def validate_content_type(request: Request):
 
 
 class WordsPayload(BaseModel):
-    words: List[str]
+    words: conlist(str, min_length=1)
 
 
 class SortPayload(WordsPayload):
