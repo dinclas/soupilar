@@ -24,8 +24,17 @@ jobs:
           python-version: 3.12.3
           cache: 'pip'
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Install Kamal
+        run: gem install kamal
 
       - name: Lint
         uses: chartboost/ruff-action@v1
