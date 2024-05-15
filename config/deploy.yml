@@ -1,8 +1,8 @@
 # Name of your application. Used to uniquely configure containers.
-service: soupillar
+service: soupilar
 
 # Name of the container image.
-image: dinclas/soupillar
+image: dinclas/soupilar
 
 # Deploy to these servers.
 servers:
