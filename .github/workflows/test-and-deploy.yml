@@ -1,0 +1,65 @@
+name: Test & Deploy
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.3
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Linter
+        uses: chartboost/ruff-action@v1
+
+      - name: Run Tests
+        run: pytest
+
+  deploy:
+    runs-on: 'ubuntu-latest'
+    # Não fazer deploy se os testes/lint falharem
+    needs: 'test'
+    # Só rodar se o workflow foi ativado por um push na branch main
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+    env:
+      DOCKER_BUILDKIT: 1
+      KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Precisamos do Ruby para rodar o Kamal.
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Install Kamal
+        run: gem install kamal
+
+      # Kamal usa SSH pra fazer o deploy, portanto precisamos de um ssh agent.
+      # SSH_PRIVATE_KEY é um segredo no repositório com a chave privada pra maquina host.
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Kamal faz o deploy usando Docker.
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Run deploy command
+        run: kamal deploy
